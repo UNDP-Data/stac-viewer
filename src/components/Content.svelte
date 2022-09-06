@@ -44,24 +44,26 @@
 				{/if}
 			</p>
 		</div>
+
 		{#if stacCollection && stacCollection.length > 0}
-			{#each stacCollection as collection}
-				<!-- svelte-ignore a11y-missing-attribute -->
-				<a class="panel-block">
-					<span class="panel-icon">
-						<i class="fas fa-book" aria-hidden="true" />
-					</span>
-					{collection.title}
-				</a>
-			{/each}
+			<div class="collection-container">
+				{#each stacCollection as collection}
+					<!-- svelte-ignore a11y-missing-attribute -->
+					<a class="panel-block">
+						<span class="panel-icon">
+							<i class="fas fa-book" aria-hidden="true" />
+						</span>
+						{collection.title}
+					</a>
+				{/each}
+			</div>
 		{/if}
-		<div class="panel-block">
-			<button class="button is-link is-outlined is-fullwidth"> Reset all filters </button>
-		</div>
 	</nav>
 </div>
 
-<style>
+<style lang="scss">
+	$height: calc(100vh - 64px);
+
 	.stac-container {
 		background-color: rgba(255, 255, 255, 0.5);
 		border: 1px solid #ccc;
@@ -74,6 +76,11 @@
 		top: 10px;
 		z-index: 10;
 		width: 300px;
-		height: 90%;
+		height: $height;
+	}
+
+	.collection-container {
+		overflow-y: auto;
+		height: calc($height - 150px);
 	}
 </style>
