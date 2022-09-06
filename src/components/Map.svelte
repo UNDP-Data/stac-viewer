@@ -7,7 +7,6 @@
 		ScaleControl,
 		AttributionControl
 	} from 'maplibre-gl';
-	const VITE_MAPTILER_KEY = import.meta.env.VITE_MAPTILER_KEY;
 
 	let map: Map;
 	let mapContainer: HTMLDivElement;
@@ -15,7 +14,7 @@
 	onMount(async () => {
 		map = new Map({
 			container: mapContainer,
-			style: `https://api.maptiler.com/maps/streets/style.json?key=${VITE_MAPTILER_KEY}`,
+			style: `https://undp-data.github.io/style/style.json`,
 			center: [37.138, 0.414],
 			zoom: 6,
 			hash: true,
