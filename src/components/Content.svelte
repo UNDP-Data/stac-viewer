@@ -1,16 +1,28 @@
 <script lang="ts">
-	import type { Stac, StacCollection } from 'src/lib/types';
-
+	import type { Stac, StacCollection } from '$lib/types';
+	import { map } from '../stores';
 	import { onMount } from 'svelte';
+	import type { GeoJSONFeature } from 'maplibre-gl';
 	let stacList: Stac[];
+	let baseUrl = '';
 	let selectedStacUrl = '';
 	let stacCollection: StacCollection[];
+
+	let targetedCollections: { [key: string]: StacCollection } = {};
+
 	onMount(async () => {
 		stacList = await getStacList();
 		if (stacList.length > 0) {
 			selectedStacUrl = stacList[0].url;
+			baseUrl = selectedStacUrl.replace('collections', '');
 		}
 	});
+
+	$: if ($map) {
+		$map.on('moveend', async () => {
+			await renderCollectionLayers();
+		});
+	}
 
 	const getStacList = async () => {
 		const res = await fetch('./stac.json');
@@ -24,7 +36,49 @@
 		const res = await fetch(selectedStacUrl);
 		const collection = await res.json();
 		stacCollection = collection.collections;
-		console.log(stacCollection);
+	};
+
+	const handleCollectionClick = async (collection: StacCollection) => {
+		targetedCollections[collection.id] = collection;
+		await renderCollectionLayers();
+	};
+
+	const renderCollectionLayers = async () => {
+		const extent = $map.getBounds();
+
+		const keys = Object.keys(targetedCollections);
+		for (let i = 0; i < keys.length; i++) {
+			const key = keys[i];
+			const url = `${baseUrl}search?collections=${key}&bbox=${[
+				extent.toArray().join(',')
+			]}&sortby=id&limit=250`;
+
+			const res = await fetch(url);
+			const geojson = await res.json();
+			const features: GeoJSONFeature[] = geojson.features;
+			// console.log(features)
+			features.forEach((feature) => {
+				const layerId = feature.id;
+				if (typeof layerId !== 'string') return;
+				// eslint-disable-next-line
+				// @ts-ignore
+				const tilejson = feature.assets.tilejson;
+				if (!tilejson) return;
+				if ($map.getSource(layerId)) return;
+				$map.addSource(layerId, {
+					url: tilejson.href,
+					type: 'raster',
+					minzoom: 5
+				});
+				if ($map.getLayer(layerId)) return;
+				$map.addLayer({
+					id: layerId,
+					type: 'raster',
+					source: layerId
+				});
+			});
+		}
+		$map.redraw();
 	};
 </script>
 
@@ -50,8 +104,13 @@
 				{#each stacCollection as collection}
 					<!-- svelte-ignore a11y-missing-attribute -->
 					<a class="panel-block">
-						<span class="panel-icon">
-							<i class="fas fa-book" aria-hidden="true" />
+						<span
+							class="panel-icon"
+							on:click={() => {
+								handleCollectionClick(collection);
+							}}
+						>
+							<i class="fas fa-plus" aria-hidden="true" />
 						</span>
 						{collection.title}
 					</a>
