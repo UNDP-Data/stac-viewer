@@ -5,11 +5,12 @@
 		<link rel="icon" href="/stac-viewer/favicon.png" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta http-equiv="content-security-policy" content="">
-	<link rel="stylesheet" href="/stac-viewer/_app/immutable/assets/index-8af512fd.css">
-	<link rel="modulepreload" href="/stac-viewer/_app/immutable/start-e6e208ac.js">
-	<link rel="modulepreload" href="/stac-viewer/_app/immutable/chunks/index-88ce4669.js">
-	<link rel="modulepreload" href="/stac-viewer/_app/immutable/layout.svelte-c8f61271.js">
-	<link rel="modulepreload" href="/stac-viewer/_app/immutable/pages/index.svelte-ce356225.js">
+	<link rel="stylesheet" href="/stac-viewer/_app/immutable/assets/index-d03d6a0f.css">
+	<link rel="modulepreload" href="/stac-viewer/_app/immutable/start-2bea35a7.js">
+	<link rel="modulepreload" href="/stac-viewer/_app/immutable/chunks/index-84cabb96.js">
+	<link rel="modulepreload" href="/stac-viewer/_app/immutable/chunks/index-6999489d.js">
+	<link rel="modulepreload" href="/stac-viewer/_app/immutable/layout.svelte-ca1fa3ef.js">
+	<link rel="modulepreload" href="/stac-viewer/_app/immutable/pages/index.svelte-9c0a5d04.js">
 	</head>
 	<style type="text/css">
 		html,
@@ -27,16 +28,22 @@
 
 <sveltekit:head><title>Sveltekit Maplibre boilerplate</title></sveltekit:head>
 
-<div><div class="map svelte-dis1da" id="map"></div></div>
+<div><div class="stac-container svelte-15qrz4v"><nav class="panel"><p class="panel-heading">Stac</p>
+		<div class="panel-block"><p class="control"></p></div>
+		
+		<div class="panel-block"><button class="button is-link is-outlined is-fullwidth">Reset all filters </button></div></nav>
+</div>
+	<div class="map svelte-dis1da" id="map"></div>
+</div>
 
 
-		<script type="module" data-sveltekit-hydrate="17nwlr6">
-		import { set_public_env, start } from "/stac-viewer/_app/immutable/start-e6e208ac.js";
+		<script type="module" data-sveltekit-hydrate="1x8pp6v">
+		import { set_public_env, start } from "/stac-viewer/_app/immutable/start-2bea35a7.js";
 
 		set_public_env({});
 
 		start({
-			target: document.querySelector('[data-sveltekit-hydrate="17nwlr6"]').parentNode,
+			target: document.querySelector('[data-sveltekit-hydrate="1x8pp6v"]').parentNode,
 			paths: {"base":"/stac-viewer","assets":"/stac-viewer"},
 			session: {},
 			route: true,
