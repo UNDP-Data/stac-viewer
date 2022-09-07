@@ -4,7 +4,6 @@
 	import { onMount } from 'svelte';
 	import colormaps from '$lib/colormaps';
 	import AutoComplete from 'simple-svelte-autocomplete';
-	import { Properties } from 'maplibre-gl';
 
 	let stacList: Stac[];
 	let baseUrl = '';
@@ -12,6 +11,7 @@
 	let stacCollection: StacCollection[];
 	let selectedCollection: StacCollection;
 	let targetedCollections: { [key: string]: StacCollection } = {};
+	let selectedColormap = '';
 
 	onMount(async () => {
 		stacList = await getStacList();
@@ -39,6 +39,7 @@
 	};
 
 	$: selectedCollection, handleCollectionSelected();
+	$: selectedColormap, handleCollectionSelected();
 
 	const handleCollectionSelected = async () => {
 		if (Object.keys(targetedCollections).length > 0) {
@@ -86,12 +87,12 @@
 		console.log(tilejson);
 		if (!tilejson) return;
 		removeStacLayer(layerId);
-		let colormap = '';
+		// let colormap = selectedColormap;
 		const matchedColors = colormaps.filter((color) => key.indexOf(color) > -1);
 		if (matchedColors.length > 0) {
-			colormap = matchedColors[0];
+			selectedColormap = matchedColors[0];
 		}
-		colormap = colormap ? `&colormap_name=${colormap}` : '';
+		const colormap = selectedColormap ? `&colormap_name=${selectedColormap}` : '';
 
 		let assets = `assets=data`;
 		if ('assets' in payload.metadata) {
@@ -139,12 +140,25 @@
 				{/if}
 			</p>
 		</div>
+		<div class="panel-block">
+			<p class="control has-icons-left">
+				<AutoComplete
+					items={colormaps}
+					bind:selectedItem={selectedColormap}
+					placeholder="Choose a colormap"
+				/>
+				<span class="icon is-left">
+					<i class="fas fa-search" aria-hidden="true" />
+				</span>
+			</p>
+		</div>
 		{#if stacCollection && stacCollection.length > 0}
 			<div class="panel-block">
 				<p class="control has-icons-left">
 					<AutoComplete
 						items={stacCollection}
 						bind:selectedItem={selectedCollection}
+						placeholder="Choose a collection"
 						labelFieldName="title"
 						labelFunction={(properties) => (properties.title ? properties.title : properties.id)}
 					/>
