@@ -2,7 +2,7 @@
 	import type { Stac, StacCollection } from '$lib/types';
 	import { map } from '../stores';
 	import { onMount } from 'svelte';
-	import type { GeoJSONFeature } from 'maplibre-gl';
+
 	let stacList: Stac[];
 	let baseUrl = '';
 	let selectedStacUrl = '';
@@ -17,12 +17,6 @@
 			baseUrl = selectedStacUrl.replace('collections', '');
 		}
 	});
-
-	$: if ($map) {
-		$map.on('moveend', async () => {
-			await renderCollectionLayers();
-		});
-	}
 
 	const getStacList = async () => {
 		const res = await fetch('./stac.json');
@@ -39,46 +33,65 @@
 	};
 
 	const handleCollectionClick = async (collection: StacCollection) => {
-		targetedCollections[collection.id] = collection;
-		await renderCollectionLayers();
-	};
-
-	const renderCollectionLayers = async () => {
-		const extent = $map.getBounds();
-
-		const keys = Object.keys(targetedCollections);
-		for (let i = 0; i < keys.length; i++) {
-			const key = keys[i];
-			const url = `${baseUrl}search?collections=${key}&bbox=${[
-				extent.toArray().join(',')
-			]}&sortby=id&limit=250`;
-
-			const res = await fetch(url);
-			const geojson = await res.json();
-			const features: GeoJSONFeature[] = geojson.features;
-			// console.log(features)
-			features.forEach((feature) => {
-				const layerId = feature.id;
-				if (typeof layerId !== 'string') return;
-				// eslint-disable-next-line
-				// @ts-ignore
-				const tilejson = feature.assets.tilejson;
-				if (!tilejson) return;
-				if ($map.getSource(layerId)) return;
-				$map.addSource(layerId, {
-					url: tilejson.href,
-					type: 'raster',
-					minzoom: 5
-				});
-				if ($map.getLayer(layerId)) return;
-				$map.addLayer({
-					id: layerId,
-					type: 'raster',
-					source: layerId
-				});
+		if (Object.keys(targetedCollections).length > 0) {
+			Object.keys(targetedCollections).forEach((key) => {
+				removeStacLayer(key);
 			});
 		}
-		$map.redraw();
+		targetedCollections[collection.id] = collection;
+		await renderCollectionLayers(collection);
+	};
+
+	const renderCollectionLayers = async (collection: StacCollection) => {
+		const key = collection.id;
+
+		const url = `${baseUrl.replace('stac', 'data')}mosaic/register`;
+		const payload = {
+			collections: [key],
+			metadata: {
+				type: 'mosaic',
+				assets: Object.keys(collection.item_assets)
+			}
+		};
+		console.log(url, JSON.stringify(payload));
+		const res = await fetch(url, {
+			method: 'POST',
+			headers: {
+				'content-type': 'application/json'
+			},
+			body: JSON.stringify(payload)
+		});
+		if (!res.ok) {
+			return;
+		}
+		const json = await res.json();
+		const layerId = key;
+		const tilejson = json.links.find(
+			(link: { rel: string; type: string; href: string }) => link.rel === 'tilejson'
+		);
+		console.log(tilejson);
+		if (!tilejson) return;
+		removeStacLayer(layerId);
+		let colormap = 'viridis';
+		if (key === 'esa-worldcover') {
+			colormap = key;
+		}
+		colormap = `&colormap_name=${colormap}`;
+		$map.addSource(layerId, {
+			url: `${tilejson.href}?assets=${payload.metadata.assets[0]}&collection=${key}${colormap}`,
+			type: 'raster',
+			minzoom: 5
+		});
+		$map.addLayer({
+			id: layerId,
+			type: 'raster',
+			source: layerId
+		});
+	};
+
+	const removeStacLayer = (id: string) => {
+		if ($map.getLayer(id)) $map.removeLayer(id);
+		if ($map.getSource(id)) $map.removeSource(id);
 	};
 </script>
 
