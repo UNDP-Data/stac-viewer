@@ -86,12 +86,12 @@
 		console.log(tilejson);
 		if (!tilejson) return;
 		removeStacLayer(layerId);
-		let colormap = 'viridis';
+		let colormap = '';
 		const matchedColors = colormaps.filter((color) => key.indexOf(color) > -1);
 		if (matchedColors.length > 0) {
 			colormap = matchedColors[0];
 		}
-		colormap = `&colormap_name=${colormap}`;
+		colormap = colormap ? `&colormap_name=${colormap}` : '';
 
 		let assets = `assets=data`;
 		if ('assets' in payload.metadata) {
