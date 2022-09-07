@@ -38,6 +38,7 @@
 		const res = await fetch(url);
 		const collection = await res.json();
 		stacCollection = collection.collections;
+		baseUrl = selectedStacUrl.replace('collections', '');
 		console.log(stacCollection);
 	};
 
