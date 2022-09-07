@@ -58,7 +58,7 @@
 		const url = `${baseUrl.replace('stac', 'data')}mosaic/register`;
 		const payload = {
 			collections: [key],
-			// bbox: collection.extent.spatial.bbox[0],
+			bbox: collection.extent.spatial.bbox[0],
 			metadata: {
 				type: 'mosaic'
 			}
@@ -104,8 +104,8 @@
 		$map.addSource(layerId, {
 			url: `${tilejson.href}?${assets}&collection=${key}${colormap}`,
 			type: 'raster',
-			minzoom: 5
-			// bounds: [payload.bbox[0], payload.bbox[1], payload.bbox[2], payload.bbox[3]]
+			minzoom: 5,
+			bounds: [payload.bbox[0], payload.bbox[1], payload.bbox[2], payload.bbox[3]]
 		});
 		$map.addLayer({
 			id: layerId,
