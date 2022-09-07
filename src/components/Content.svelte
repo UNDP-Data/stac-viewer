@@ -13,6 +13,9 @@
 	let targetedCollections: { [key: string]: StacCollection } = {};
 	let selectedColormap = '';
 
+	let assetsList: string[] = [];
+	let selectedAsset = '';
+
 	onMount(async () => {
 		stacList = await getStacList();
 		if (stacList.length > 0) {
@@ -40,6 +43,7 @@
 
 	$: selectedCollection, handleCollectionSelected();
 	$: selectedColormap, handleCollectionSelected();
+	$: selectedAsset, handleCollectionSelected();
 
 	const handleCollectionSelected = async () => {
 		if (Object.keys(targetedCollections).length > 0) {
@@ -49,24 +53,25 @@
 		}
 		if (!selectedCollection) return;
 		targetedCollections[selectedCollection.id] = selectedCollection;
-		await renderCollectionLayers(selectedCollection);
+		await renderCollectionLayers();
 	};
 
-	const renderCollectionLayers = async (collection: StacCollection) => {
-		const key = collection.id;
-		console.log(collection);
+	const renderCollectionLayers = async () => {
+		const key = selectedCollection.id;
+		console.log(selectedCollection);
 		const url = `${baseUrl.replace('stac', 'data')}mosaic/register`;
 		const payload = {
 			collections: [key],
-			bbox: collection.extent.spatial.bbox[0],
+			bbox: selectedCollection.extent.spatial.bbox[0],
 			metadata: {
 				type: 'mosaic'
 			}
 		};
-		if (collection.item_assets) {
+		if (selectedCollection.item_assets) {
+			assetsList = Object.keys(selectedCollection.item_assets);
 			// eslint-disable-next-line
 			// @ts-ignore
-			payload.metadata.assets = Object.keys(collection.item_assets);
+			payload.metadata.assets = assetsList;
 		}
 		console.log(url, JSON.stringify(payload));
 		const res = await fetch(url, {
@@ -94,12 +99,13 @@
 		}
 		const colormap = selectedColormap ? `&colormap_name=${selectedColormap}` : '';
 
-		let assets = `assets=data`;
-		if ('assets' in payload.metadata) {
-			// eslint-disable-next-line
-			// @ts-ignore
-			assets = `assets=${payload.metadata.assets[0]}`;
+		if (!selectedAsset && assetsList.length > 0) {
+			selectedAsset = assetsList[0];
 		}
+		if (!selectedAsset) {
+			selectedAsset = 'data';
+		}
+		const assets = `assets=${selectedAsset}`;
 
 		$map.addSource(layerId, {
 			url: `${tilejson.href}?${assets}&collection=${key}${colormap}`,
@@ -165,6 +171,19 @@
 					<span class="icon is-left">
 						<i class="fas fa-search" aria-hidden="true" />
 					</span>
+				</p>
+			</div>
+			<div class="panel-block">
+				<p class="control">
+					{#if assetsList && assetsList.length > 0}
+						<div class="select">
+							<select bind:value={selectedAsset}>
+								{#each assetsList as asset}
+									<option value={asset}>{asset}</option>
+								{/each}
+							</select>
+						</div>
+					{/if}
 				</p>
 			</div>
 		{/if}
