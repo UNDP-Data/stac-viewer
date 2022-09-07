@@ -99,6 +99,9 @@
 		}
 		const colormap = selectedColormap ? `&colormap_name=${selectedColormap}` : '';
 
+		if (!assetsList.includes(selectedAsset)) {
+			selectedAsset = '';
+		}
 		if (!selectedAsset && assetsList.length > 0) {
 			selectedAsset = assetsList[0];
 		}
@@ -173,19 +176,20 @@
 					</span>
 				</p>
 			</div>
-			<div class="panel-block">
-				<p class="control">
-					{#if assetsList && assetsList.length > 0}
-						<div class="select">
-							<select bind:value={selectedAsset}>
-								{#each assetsList as asset}
-									<option value={asset}>{asset}</option>
-								{/each}
-							</select>
-						</div>
-					{/if}
-				</p>
-			</div>
+			{#if assetsList && assetsList.length > 0}
+				<div class="panel-block">
+					<p class="control has-icons-left">
+						<AutoComplete
+							items={assetsList}
+							bind:selectedItem={selectedAsset}
+							placeholder="Choose a assets"
+						/>
+						<span class="icon is-left">
+							<i class="fas fa-search" aria-hidden="true" />
+						</span>
+					</p>
+				</div>
+			{/if}
 		{/if}
 	</nav>
 </div>
