@@ -27,7 +27,9 @@
 	$: selectedStacUrl, getStacCollection();
 	const getStacCollection = async () => {
 		if (!selectedStacUrl) return;
-		const res = await fetch(selectedStacUrl);
+		// const url = selectedStacUrl
+		const url = './collections.json'; // use downloaded collection instead of requesting from API
+		const res = await fetch(url);
 		const collection = await res.json();
 		stacCollection = collection.collections;
 	};
