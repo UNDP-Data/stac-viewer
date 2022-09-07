@@ -3,12 +3,13 @@
 	import { map } from '../stores';
 	import { onMount } from 'svelte';
 	import colormaps from '$lib/colormaps';
+	import AutoComplete from 'simple-svelte-autocomplete';
 
 	let stacList: Stac[];
 	let baseUrl = '';
 	let selectedStacUrl = '';
 	let stacCollection: StacCollection[];
-
+	let selectedCollection: StacCollection;
 	let targetedCollections: { [key: string]: StacCollection } = {};
 
 	onMount(async () => {
@@ -36,28 +37,35 @@
 		console.log(stacCollection);
 	};
 
-	const handleCollectionClick = async (collection: StacCollection) => {
+	$: selectedCollection, handleCollectionSelected();
+
+	const handleCollectionSelected = async () => {
 		if (Object.keys(targetedCollections).length > 0) {
 			Object.keys(targetedCollections).forEach((key) => {
 				removeStacLayer(key);
 			});
 		}
-		targetedCollections[collection.id] = collection;
-		await renderCollectionLayers(collection);
+		if (!selectedCollection) return;
+		targetedCollections[selectedCollection.id] = selectedCollection;
+		await renderCollectionLayers(selectedCollection);
 	};
 
 	const renderCollectionLayers = async (collection: StacCollection) => {
 		const key = collection.id;
-
+		console.log(collection);
 		const url = `${baseUrl.replace('stac', 'data')}mosaic/register`;
 		const payload = {
 			collections: [key],
-			bbox: collection.extent.spatial.bbox[0],
+			// bbox: collection.extent.spatial.bbox[0],
 			metadata: {
-				type: 'mosaic',
-				assets: Object.keys(collection.item_assets)
+				type: 'mosaic'
 			}
 		};
+		if (collection.item_assets) {
+			// eslint-disable-next-line
+			// @ts-ignore
+			payload.metadata.assets = Object.keys(collection.item_assets);
+		}
 		console.log(url, JSON.stringify(payload));
 		const res = await fetch(url, {
 			method: 'POST',
@@ -83,11 +91,19 @@
 			colormap = matchedColors[0];
 		}
 		colormap = `&colormap_name=${colormap}`;
+
+		let assets = `assets=data`;
+		if ('assets' in payload.metadata) {
+			// eslint-disable-next-line
+			// @ts-ignore
+			assets = `assets=${payload.metadata.assets[0]}`;
+		}
+
 		$map.addSource(layerId, {
-			url: `${tilejson.href}?assets=${payload.metadata.assets[0]}&collection=${key}${colormap}`,
+			url: `${tilejson.href}?${assets}&collection=${key}${colormap}`,
 			type: 'raster',
-			minzoom: 5,
-			bounds: [payload.bbox[0], payload.bbox[1], payload.bbox[2], payload.bbox[3]]
+			minzoom: 5
+			// bounds: [payload.bbox[0], payload.bbox[1], payload.bbox[2], payload.bbox[3]]
 		});
 		$map.addLayer({
 			id: layerId,
@@ -122,33 +138,26 @@
 				{/if}
 			</p>
 		</div>
-
 		{#if stacCollection && stacCollection.length > 0}
-			<div class="collection-container">
-				{#each stacCollection as collection}
-					<!-- svelte-ignore a11y-missing-attribute -->
-					<a class="panel-block">
-						<span
-							class="panel-icon"
-							on:click={() => {
-								handleCollectionClick(collection);
-							}}
-						>
-							<i class="fas fa-plus" aria-hidden="true" />
-						</span>
-						{collection.title}
-					</a>
-				{/each}
+			<div class="panel-block">
+				<p class="control has-icons-left">
+					<AutoComplete
+						items={stacCollection}
+						bind:selectedItem={selectedCollection}
+						labelFieldName="title"
+					/>
+					<span class="icon is-left">
+						<i class="fas fa-search" aria-hidden="true" />
+					</span>
+				</p>
 			</div>
 		{/if}
 	</nav>
 </div>
 
 <style lang="scss">
-	$height: calc(100vh - 64px);
-
 	.stac-container {
-		background-color: rgba(255, 255, 255, 0.5);
+		background-color: rgba(255, 255, 255, 0.8);
 		border: 1px solid #ccc;
 		color: rgba(74, 74, 74);
 		font-family: ProximaNova, sans-serif;
@@ -159,11 +168,24 @@
 		top: 10px;
 		z-index: 10;
 		width: 300px;
-		height: $height;
 	}
 
-	.collection-container {
-		overflow-y: auto;
-		height: calc($height - 150px);
+	:global(.autocomplete-input) {
+		background-color: #fff;
+		border-radius: 10px;
+		border: 1px solid #ccc;
+		box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1);
+		color: #4a4a4a;
+		font-family: ProximaNova, sans-serif;
+		font-size: 11px;
+		height: 40px !important;
+	}
+
+	:global(.autocomplete-list) {
+		top: 5px !important;
+		background-color: #fff;
+		border-radius: 10px;
+		border: 1px solid #ccc;
+		box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1);
 	}
 </style>

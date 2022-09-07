@@ -47,7 +47,7 @@ export interface StacCollection {
 	}[];
 	description: string;
 	stac_version: string;
-	item_assets: {
+	item_assets?: {
 		[key: string]: {
 			title: string;
 			type: string;
