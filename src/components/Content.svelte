@@ -2,6 +2,7 @@
 	import type { Stac, StacCollection } from '$lib/types';
 	import { map } from '../stores';
 	import { onMount } from 'svelte';
+	import colormaps from '$lib/colormaps';
 
 	let stacList: Stac[];
 	let baseUrl = '';
@@ -32,6 +33,7 @@
 		const res = await fetch(url);
 		const collection = await res.json();
 		stacCollection = collection.collections;
+		console.log(stacCollection);
 	};
 
 	const handleCollectionClick = async (collection: StacCollection) => {
@@ -50,6 +52,7 @@
 		const url = `${baseUrl.replace('stac', 'data')}mosaic/register`;
 		const payload = {
 			collections: [key],
+			bbox: collection.extent.spatial.bbox[0],
 			metadata: {
 				type: 'mosaic',
 				assets: Object.keys(collection.item_assets)
@@ -75,20 +78,26 @@
 		if (!tilejson) return;
 		removeStacLayer(layerId);
 		let colormap = 'viridis';
-		if (key === 'esa-worldcover') {
-			colormap = key;
+		const matchedColors = colormaps.filter((color) => key.indexOf(color) > -1);
+		if (matchedColors.length > 0) {
+			colormap = matchedColors[0];
 		}
 		colormap = `&colormap_name=${colormap}`;
 		$map.addSource(layerId, {
 			url: `${tilejson.href}?assets=${payload.metadata.assets[0]}&collection=${key}${colormap}`,
 			type: 'raster',
-			minzoom: 5
+			minzoom: 5,
+			bounds: [payload.bbox[0], payload.bbox[1], payload.bbox[2], payload.bbox[3]]
 		});
 		$map.addLayer({
 			id: layerId,
 			type: 'raster',
 			source: layerId
 		});
+		// $map.fitBounds([
+		// 	[payload.bbox[0], payload.bbox[1]],
+		// 	[payload.bbox[2], payload.bbox[3]]
+		// ]);
 	};
 
 	const removeStacLayer = (id: string) => {
