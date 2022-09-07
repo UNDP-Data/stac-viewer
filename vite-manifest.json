@@ -32,12 +32,12 @@
     "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.ttf"
   },
   "node_modules/@sveltejs/kit/src/runtime/client/start.js": {
-    "file": "_app/immutable/start-83f2eb57.js",
+    "file": "_app/immutable/start-34590e59.js",
     "src": "node_modules/@sveltejs/kit/src/runtime/client/start.js",
     "isEntry": true,
     "imports": [
       "_index-f0037ac9.js",
-      "_singletons-35e0f1a7.js"
+      "_singletons-87f0ecc8.js"
     ],
     "dynamicImports": [
       ".svelte-kit/generated/nodes/0.js",
@@ -54,16 +54,16 @@
     ]
   },
   "node_modules/@sveltejs/kit/src/runtime/components/error.svelte": {
-    "file": "_app/immutable/components/error.svelte-f5d9f810.js",
+    "file": "_app/immutable/components/error.svelte-bd2e6d91.js",
     "src": "node_modules/@sveltejs/kit/src/runtime/components/error.svelte",
     "isEntry": true,
     "imports": [
       "_index-f0037ac9.js",
-      "_singletons-35e0f1a7.js"
+      "_singletons-87f0ecc8.js"
     ]
   },
   "src/routes/+page.svelte": {
-    "file": "_app/immutable/components/pages/_page.svelte-d4798b1f.js",
+    "file": "_app/immutable/components/pages/_page.svelte-1fe5cd77.js",
     "src": "src/routes/+page.svelte",
     "isEntry": true,
     "imports": [
@@ -92,8 +92,8 @@
       "__page-802cc2a3.js"
     ]
   },
-  "_singletons-35e0f1a7.js": {
-    "file": "_app/immutable/chunks/singletons-35e0f1a7.js",
+  "_singletons-87f0ecc8.js": {
+    "file": "_app/immutable/chunks/singletons-87f0ecc8.js",
     "imports": [
       "_index-d0b2d45d.js"
     ]
@@ -119,7 +119,7 @@
     ]
   },
   ".svelte-kit/generated/nodes/1.js": {
-    "file": "_app/immutable/chunks/1-8649fc3b.js",
+    "file": "_app/immutable/chunks/1-5be297c9.js",
     "src": ".svelte-kit/generated/nodes/1.js",
     "isDynamicEntry": true,
     "imports": [
@@ -127,7 +127,7 @@
     ]
   },
   ".svelte-kit/generated/nodes/2.js": {
-    "file": "_app/immutable/chunks/2-ca30d7a5.js",
+    "file": "_app/immutable/chunks/2-232f9d33.js",
     "src": ".svelte-kit/generated/nodes/2.js",
     "isDynamicEntry": true,
     "imports": [
