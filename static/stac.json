@@ -10,5 +10,41 @@
 		"type": "external",
 		"tags": ["STAC", "API", "Microsoft"],
 		"selected": false
+	},
+	{
+		"id": "radiant",
+		"published": true,
+		"path": "radiant/",
+		"url": "https://api.radiant.earth/mlhub/v1/collections",
+		"label": "Radiant MLHub",
+		"description": "Searchable spatiotemporal metadata describing Earth science datasets hosted by Radiant",
+		"icon": "fa-brands fa-microsoft",
+		"type": "external",
+		"tags": ["STAC", "API", "Radiant"],
+		"selected": false
+	},
+	{
+		"id": "digitalearth.africa",
+		"published": true,
+		"path": "digitalearth.africa/",
+		"url": "https://explorer.digitalearth.africa/stac/collections",
+		"label": "Digital Earth Africa",
+		"description": "Searchable spatiotemporal metadata describing Earth science datasets hosted by Digital Earth Africa",
+		"icon": "fa-brands fa-microsoft",
+		"type": "external",
+		"tags": ["STAC", "API", "Digital Earth Africa"],
+		"selected": false
+	},
+	{
+		"id": "earthsearch",
+		"published": true,
+		"path": "earthsearch/",
+		"url": "https://earth-search.aws.element84.com/v0/collections",
+		"label": "Earth Search",
+		"description": "Searchable spatiotemporal metadata describing Earth science datasets hosted by Earth Search",
+		"icon": "fa-brands fa-microsoft",
+		"type": "external",
+		"tags": ["STAC", "API", "Earth Search"],
+		"selected": false
 	}
 ]

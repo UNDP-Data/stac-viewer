@@ -4,6 +4,7 @@
 	import { onMount } from 'svelte';
 	import colormaps from '$lib/colormaps';
 	import AutoComplete from 'simple-svelte-autocomplete';
+	import { Properties } from 'maplibre-gl';
 
 	let stacList: Stac[];
 	let baseUrl = '';
@@ -29,8 +30,8 @@
 	$: selectedStacUrl, getStacCollection();
 	const getStacCollection = async () => {
 		if (!selectedStacUrl) return;
-		// const url = selectedStacUrl
-		const url = './collections.json'; // use downloaded collection instead of requesting from API
+		const url = selectedStacUrl;
+		// const url = './collections.json'; // use downloaded collection instead of requesting from API
 		const res = await fetch(url);
 		const collection = await res.json();
 		stacCollection = collection.collections;
@@ -145,6 +146,7 @@
 						items={stacCollection}
 						bind:selectedItem={selectedCollection}
 						labelFieldName="title"
+						labelFunction={(properties) => (properties.title ? properties.title : properties.id)}
 					/>
 					<span class="icon is-left">
 						<i class="fas fa-search" aria-hidden="true" />
