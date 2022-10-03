@@ -16,6 +16,14 @@
 	let assetsList: string[] = [];
 	let selectedAsset = '';
 
+	let selectedCloudCover: number;
+	let cloudCoverOptions = [
+		{ title: `Most recent (no cloud)`, value: 0 },
+		{ title: `Most recent (low cloud)`, value: 5 },
+		{ title: `Most recent (any cloud cover)`, value: 10 },
+		{ title: `Don't filter by cloud cover`, value: -1 }
+	];
+
 	onMount(async () => {
 		stacList = await getStacList();
 		if (stacList.length > 0) {
@@ -45,6 +53,7 @@
 	$: selectedCollection, handleCollectionSelected();
 	$: selectedColormap, handleCollectionSelected();
 	$: selectedAsset, handleCollectionSelected();
+	$: selectedCloudCover, handleCollectionSelected();
 
 	const handleCollectionSelected = async () => {
 		if (Object.keys(targetedCollections).length > 0) {
@@ -62,22 +71,41 @@
 		console.log(selectedCollection);
 		const url = `${baseUrl.replace('stac', 'data')}mosaic/register`;
 		const payload = {
-			collections: [key],
-			bbox: selectedCollection.extent.spatial.bbox[0],
-			metadata: {
-				type: 'mosaic'
+			'filter-lang': 'cql2-json',
+			filter: {
+				op: 'and',
+				args: [
+					{
+						op: '=',
+						args: [
+							{
+								property: 'collection'
+							},
+							key
+						]
+					}
+				]
 			}
 		};
+		if (selectedCloudCover > -1) {
+			payload.filter.args.push({
+				op: '<=',
+				args: [
+					{
+						property: 'eo:cloud_cover'
+					},
+					selectedCloudCover.toString()
+				]
+			});
+		}
 		if (selectedCollection.item_assets) {
 			assetsList = Object.keys(selectedCollection.item_assets);
-			// eslint-disable-next-line
-			// @ts-ignore
-			payload.metadata.assets = assetsList;
 		}
 		console.log(url, JSON.stringify(payload));
 		const res = await fetch(url, {
 			method: 'POST',
 			headers: {
+				accept: 'application/json',
 				'content-type': 'application/json'
 			},
 			body: JSON.stringify(payload)
@@ -104,7 +132,14 @@
 			selectedAsset = '';
 		}
 		if (!selectedAsset && assetsList.length > 0) {
-			selectedAsset = assetsList[0];
+			switch (selectedCollection.id) {
+				case 'sentinel-2-l2a':
+					selectedAsset = 'visual';
+					break;
+				default:
+					selectedAsset = assetsList[0];
+					break;
+			}
 		}
 		if (!selectedAsset) {
 			selectedAsset = 'data';
@@ -114,8 +149,8 @@
 		$map.addSource(layerId, {
 			url: `${tilejson.href}?${assets}&collection=${key}${colormap}`,
 			type: 'raster',
-			minzoom: 5,
-			bounds: [payload.bbox[0], payload.bbox[1], payload.bbox[2], payload.bbox[3]]
+			minzoom: 5
+			// bounds: [payload.bbox[0], payload.bbox[1], payload.bbox[2], payload.bbox[3]]
 		});
 		$map.addLayer({
 			id: layerId,
@@ -150,18 +185,6 @@
 				{/if}
 			</p>
 		</div>
-		<div class="panel-block">
-			<p class="control has-icons-left">
-				<AutoComplete
-					items={colormaps}
-					bind:selectedItem={selectedColormap}
-					placeholder="Choose a colormap"
-				/>
-				<span class="icon is-left">
-					<i class="fas fa-search" aria-hidden="true" />
-				</span>
-			</p>
-		</div>
 		{#if stacCollection && stacCollection.length > 0}
 			<div class="panel-block">
 				<p class="control has-icons-left">
@@ -184,6 +207,30 @@
 							items={assetsList}
 							bind:selectedItem={selectedAsset}
 							placeholder="Choose a assets"
+						/>
+						<span class="icon is-left">
+							<i class="fas fa-search" aria-hidden="true" />
+						</span>
+					</p>
+				</div>
+			{/if}
+			{#if selectedCollection}
+				<div class="panel-block">
+					<p class="control has-icons-left" />
+					<div class="select">
+						<select bind:value={selectedCloudCover}>
+							{#each cloudCoverOptions as option}
+								<option value={option.value}>{option.title}</option>
+							{/each}
+						</select>
+					</div>
+				</div>
+				<div class="panel-block">
+					<p class="control has-icons-left">
+						<AutoComplete
+							items={colormaps}
+							bind:selectedItem={selectedColormap}
+							placeholder="Choose a colormap"
 						/>
 						<span class="icon is-left">
 							<i class="fas fa-search" aria-hidden="true" />
