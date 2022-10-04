@@ -55,12 +55,10 @@
 			.map((key: string) => `${key}=${options[key]}`)
 			.join('&')}`;
 
-		if (currentCollectionId && map.getLayer(currentCollectionId))
-			map.removeLayer(currentCollectionId);
-		if (currentCollectionId && map.getSource(currentCollectionId))
-			map.removeSource(currentCollectionId);
+		removeRasterLayer(currentCollectionId);
 
 		currentCollectionId = selectedCollection.id;
+		removeRasterLayer(currentCollectionId);
 		map.addSource(currentCollectionId, {
 			url: url,
 			type: 'raster',
@@ -71,6 +69,12 @@
 			type: 'raster',
 			source: currentCollectionId
 		});
+	};
+
+	const removeRasterLayer = (id: string) => {
+		if (!id) return;
+		if (map.getLayer(id)) map.removeLayer(id);
+		if (map.getSource(id)) map.removeSource(id);
 	};
 
 	const getTileJSON = async () => {

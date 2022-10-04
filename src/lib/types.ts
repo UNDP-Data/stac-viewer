@@ -55,5 +55,8 @@ export interface StacCollection {
 			gsd: number;
 		};
 	};
-	// skipped other properties
+	stac_extensions: string[];
+	'msft:container'?: string;
+	'msft:storage_account'?: string;
+	'msft:short_description'?: string;
 }

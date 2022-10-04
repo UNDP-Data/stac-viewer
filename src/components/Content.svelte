@@ -1,44 +1,38 @@
 <script lang="ts">
-	import type { Stac } from '$lib/types';
 	import { map } from '../stores';
-	import { onMount } from 'svelte';
-	import StacCollectionControl from '$lib/StacCollectionControl.svelte';
+	import MicrosoftMosaicControl from '$lib/MicrosoftMosaicControl.svelte';
+	import StacControl from '$lib/StacControl.svelte';
 
-	let stacList: Stac[];
-	let selectedStac: Stac;
-
-	onMount(async () => {
-		stacList = await getStacList();
-		if (stacList.length > 0) {
-			selectedStac = stacList[0];
-		}
-	});
-
-	const getStacList = async () => {
-		const res = await fetch('./stac.json');
-		const json = await res.json();
-		return json;
-	};
+	const tabs = [
+		{ title: 'Microsoft Mosaic', id: 'msmosaic' },
+		{ title: 'STAC', id: 'stac' }
+	];
+	let selectedTab: string = tabs[0].id;
 </script>
 
 <div class="stac-container">
 	<nav class="panel">
 		<p class="panel-heading">Stac</p>
 		<div class="panel-block">
-			<p class="control">
-				{#if stacList && stacList.length > 0}
-					<div class="select">
-						<select bind:value={selectedStac}>
-							{#each stacList as stac}
-								<option value={stac}>{stac.label}</option>
-							{/each}
-						</select>
-					</div>
-				{/if}
-			</p>
+			<div class="tabs">
+				<ul>
+					{#each tabs as tab}
+						<li
+							class={`${selectedTab === tab.id ? 'is-active' : ''}`}
+							on:click={() => {
+								selectedTab = tab.id;
+							}}
+						>
+							<a>{tab.title}</a>
+						</li>
+					{/each}
+				</ul>
+			</div>
 		</div>
-		{#if selectedStac && selectedStac.id === 'msft'}
-			<StacCollectionControl bind:map={$map} />
+		{#if selectedTab === 'msmosaic'}
+			<MicrosoftMosaicControl bind:map={$map} />
+		{:else}
+			<StacControl bind:map={$map} />
 		{/if}
 	</nav>
 </div>
