@@ -18,7 +18,7 @@ class MicrosoftPlanetaryComputerAPI {
 
 	async getCollection() {
 		// const url = `${this.BASE_API}/stac/v1/collections`
-		const url = `/collections.json`;
+		const url = `./collections.json`;
 		const res = await fetch(url);
 		const collection = await res.json();
 		const stacCollection: StacCollection[] = collection.collections;
