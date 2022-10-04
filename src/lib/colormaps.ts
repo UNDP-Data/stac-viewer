@@ -1,4 +1,5 @@
 const colormaps = [
+	'',
 	'accent',
 	'accent_r',
 	'afmhot',
