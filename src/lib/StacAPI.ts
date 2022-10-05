@@ -1,4 +1,4 @@
-import type { Stac, StacCollection } from '$lib/types';
+import type { Stac, StacCollection, StacItemFeatureCollection } from '$lib/types';
 import type { GeoJSONFeature, LngLatBounds } from 'maplibre-gl';
 
 class StacAPI {
@@ -18,8 +18,8 @@ class StacAPI {
 	async getItemProperties(collection: StacCollection) {
 		const url = `${this.stac.url}/collections/${collection.id}/items?limit=1`;
 		const res = await fetch(url);
-		const features: GeoJSONFeature[] = await res.json();
-		return features[0].properties;
+		const fc: StacItemFeatureCollection = await res.json();
+		return fc.features[0].properties;
 	}
 
 	async searchItems(collection: StacCollection, bounds: LngLatBounds) {
@@ -67,7 +67,7 @@ class StacAPI {
 			limit: 10,
 			sortby: [
 				{
-					field: 'id',
+					field: 'datetime',
 					direction: 'asc'
 				}
 			]
@@ -97,6 +97,23 @@ class StacAPI {
 			body: JSON.stringify(JSON.parse(JSON.stringify(payload)))
 		});
 
+		const geojson = await res.json();
+		return geojson;
+	}
+
+	async getPreviousNextStacItems(stacItems: StacItemFeatureCollection, type: 'next' | 'previous') {
+		if (!stacItems) return;
+		const link = stacItems.links.find((link) => link.rel === type);
+		if (!link) return;
+		console.log(link);
+		const res = await fetch(link.href, {
+			method: link.method,
+			headers: {
+				accept: link.type,
+				'content-type': link.type
+			},
+			body: JSON.stringify(link.body)
+		});
 		const geojson = await res.json();
 		return geojson;
 	}

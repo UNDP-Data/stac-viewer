@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import AutoComplete from 'simple-svelte-autocomplete';
-	import type { Stac, StacCollection } from '$lib/types';
+	import type { Stac, StacCollection, StacItemFeatureCollection } from '$lib/types';
 	import StacAPI from './StacAPI';
 	import type { Map } from 'maplibre-gl';
 
@@ -12,6 +12,7 @@
 	let selectedStac: Stac;
 	let selectedCollection: StacCollection;
 	let stacCollection: StacCollection[];
+	let stacItems: StacItemFeatureCollection;
 
 	onMount(async () => {
 		stacList = await getStacList();
@@ -46,12 +47,16 @@
 		if (!(stacApi && selectedCollection)) return;
 		const bounds = map.getBounds();
 		const geojson = await stacApi.searchItems(selectedCollection, bounds);
+		stacItems = geojson;
+		updateLayer();
+	};
 
+	const updateLayer = () => {
 		const itemLayerId = 'stac-items';
 		removeLayer(itemLayerId);
 		map.addSource(itemLayerId, {
 			type: 'geojson',
-			data: geojson
+			data: stacItems
 		});
 		map.addLayer({
 			id: itemLayerId,
@@ -64,6 +69,12 @@
 				'fill-outline-color': 'rgba(255,0,0,1)'
 			}
 		});
+	};
+
+	const getPreviousNextStacItems = async (type: 'next' | 'previous') => {
+		if (!stacItems) return;
+		stacItems = await stacApi?.getPreviousNextStacItems(stacItems, type);
+		updateLayer();
 	};
 
 	const removeLayer = (id: string) => {
@@ -105,5 +116,54 @@
 	</div>
 {/if}
 
+{#if stacItems && stacItems.features.length > 0}
+	<p class="panel-heading m-0 pt-1 pb-1">
+		{#if stacItems.links.find((link) => link.rel === 'previous')}
+			<button
+				class="button is-small"
+				on:click={() => {
+					getPreviousNextStacItems('previous');
+				}}>Previous</button
+			>
+		{/if}
+		{#if stacItems.links.find((link) => link.rel === 'next')}
+			<button
+				class="button is-small"
+				on:click={() => {
+					getPreviousNextStacItems('next');
+				}}>Next</button
+			>
+		{/if}
+	</p>
+	<div class="item-contents">
+		{#each stacItems.features as item}
+			<div class="panel-block">
+				<div class="card m-0">
+					<div class="card-content m-0 p-0">
+						<div class="media">
+							<div class="media-left">
+								<figure class="image is-64x64">
+									<img src={item.assets['rendered_preview'].href} alt="Placeholder image" />
+								</figure>
+							</div>
+							<div class="media-content">
+								<p class="subtitle is-6 m-0 p-0">{item.id}</p>
+								<p class="subtitle is-6 m-0 p-0">EPSG:{item.properties['proj:epsg']}</p>
+								<time class="subtitle is-6 m-0 p-0" datetime="2016-1-1"
+									>{item.properties['datetime']}</time
+								>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		{/each}
+	</div>
+{/if}
+
 <style lang="scss">
+	.item-contents {
+		height: 300px;
+		overflow-y: auto;
+	}
 </style>

@@ -60,3 +60,43 @@ export interface StacCollection {
 	'msft:storage_account'?: string;
 	'msft:short_description'?: string;
 }
+
+export interface StacItemFeatureCollection {
+	type: 'FeatureCollection';
+	features: StacItemFeature[];
+	links: {
+		rel: string;
+		type: string;
+		href: string;
+		method?: string;
+		body?: { [key: string]: string };
+	}[];
+}
+
+export interface StacItemFeature {
+	id: string;
+	bbox: number[];
+	type: 'Feature';
+	links: {
+		rel: string;
+		type: string;
+		href: string;
+	}[];
+	assets: {
+		[key: string]: {
+			href: string;
+			'proj:bbox': number[];
+			'proj:shape': number[];
+			'proj:transform': number[];
+			title: string;
+			type: string;
+			roles: string[];
+			gsd: number;
+		};
+	};
+	geometry: GeoJSON.Geometry;
+	collection: string;
+	properties: { [key: string]: string | number };
+	stac_extensions: string[];
+	stac_version: string;
+}
