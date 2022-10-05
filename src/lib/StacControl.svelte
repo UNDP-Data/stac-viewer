@@ -18,6 +18,10 @@
 		if (stacList.length > 0) {
 			selectedStac = stacList[0];
 		}
+
+		map.on('moveend', async () => {
+			await getStacItems();
+		});
 	});
 
 	$: selectedStac, getStacCollection();
@@ -40,13 +44,8 @@
 
 	const getStacItems = async () => {
 		if (!(stacApi && selectedCollection)) return;
-		const bounds = map.getBounds().toArray();
-		const geojson = await stacApi.getItems(selectedCollection, [
-			bounds[0][0],
-			bounds[0][1],
-			bounds[1][0],
-			bounds[1][1]
-		]);
+		const bounds = map.getBounds();
+		const geojson = await stacApi.searchItems(selectedCollection, bounds);
 
 		const itemLayerId = 'stac-items';
 		removeLayer(itemLayerId);
@@ -60,9 +59,9 @@
 			source: itemLayerId,
 			layout: {},
 			paint: {
-				'fill-color': '#FFF',
-				'fill-opacity': 0,
-				'fill-outline-color': '#F00'
+				'fill-color': 'rgba(255,255,255,0)',
+				'fill-opacity': 0.4,
+				'fill-outline-color': 'rgba(255,0,0,1)'
 			}
 		});
 	};
