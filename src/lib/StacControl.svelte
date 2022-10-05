@@ -12,7 +12,7 @@
 	let selectedStac: Stac;
 	let selectedCollection: StacCollection;
 	let stacCollection: StacCollection[];
-	let stacItems: StacItemFeatureCollection;
+	let stacItems: StacItemFeatureCollection | undefined;
 
 	onMount(async () => {
 		stacList = await getStacList();
@@ -41,6 +41,10 @@
 		}
 		stacApi = new StacAPI(selectedStac);
 		stacCollection = await stacApi.getCollection();
+		if (stacItems && stacItems.features.length > 0) {
+			removeLayer(stacItems?.features[0].collection);
+			stacItems = undefined;
+		}
 	};
 
 	const getStacItems = async () => {
