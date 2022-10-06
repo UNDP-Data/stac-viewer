@@ -15,13 +15,13 @@
     "file": "_app/immutable/assets/fa-v4compatibility-7d1c2ce5.woff2",
     "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.woff2"
   },
-  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.ttf": {
-    "file": "_app/immutable/assets/fa-regular-400-fdc1f753.ttf",
-    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.ttf"
-  },
   "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.ttf": {
     "file": "_app/immutable/assets/fa-brands-400-c7ae37d3.ttf",
     "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.ttf"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.ttf": {
+    "file": "_app/immutable/assets/fa-regular-400-fdc1f753.ttf",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.ttf"
   },
   "node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.ttf": {
     "file": "_app/immutable/assets/fa-solid-900-6d53c706.ttf",
@@ -32,12 +32,12 @@
     "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.ttf"
   },
   "node_modules/@sveltejs/kit/src/runtime/client/start.js": {
-    "file": "_app/immutable/start-d669f600.js",
+    "file": "_app/immutable/start-81c9564d.js",
     "src": "node_modules/@sveltejs/kit/src/runtime/client/start.js",
     "isEntry": true,
     "imports": [
       "_index-8d4137e8.js",
-      "_singletons-f3f8dc02.js"
+      "_singletons-0bae2b0c.js"
     ],
     "dynamicImports": [
       ".svelte-kit/generated/nodes/0.js",
@@ -54,16 +54,16 @@
     ]
   },
   "node_modules/@sveltejs/kit/src/runtime/components/error.svelte": {
-    "file": "_app/immutable/components/error.svelte-5c230e65.js",
+    "file": "_app/immutable/components/error.svelte-84b78c2a.js",
     "src": "node_modules/@sveltejs/kit/src/runtime/components/error.svelte",
     "isEntry": true,
     "imports": [
       "_index-8d4137e8.js",
-      "_singletons-f3f8dc02.js"
+      "_singletons-0bae2b0c.js"
     ]
   },
   "src/routes/+page.svelte": {
-    "file": "_app/immutable/components/pages/_page.svelte-51025345.js",
+    "file": "_app/immutable/components/pages/_page.svelte-0f0b421d.js",
     "src": "src/routes/+page.svelte",
     "isEntry": true,
     "imports": [
@@ -92,8 +92,8 @@
       "__page-802cc2a3.js"
     ]
   },
-  "_singletons-f3f8dc02.js": {
-    "file": "_app/immutable/chunks/singletons-f3f8dc02.js",
+  "_singletons-0bae2b0c.js": {
+    "file": "_app/immutable/chunks/singletons-0bae2b0c.js",
     "imports": [
       "_index-848a9081.js"
     ]
@@ -119,7 +119,7 @@
     ]
   },
   ".svelte-kit/generated/nodes/1.js": {
-    "file": "_app/immutable/chunks/1-a0972de9.js",
+    "file": "_app/immutable/chunks/1-0cf501cb.js",
     "src": ".svelte-kit/generated/nodes/1.js",
     "isDynamicEntry": true,
     "imports": [
@@ -127,7 +127,7 @@
     ]
   },
   ".svelte-kit/generated/nodes/2.js": {
-    "file": "_app/immutable/chunks/2-86e6601d.js",
+    "file": "_app/immutable/chunks/2-84a19762.js",
     "src": ".svelte-kit/generated/nodes/2.js",
     "isDynamicEntry": true,
     "imports": [
