@@ -45,6 +45,7 @@
 			removeLayer(stacItems?.features[0].collection);
 			stacItems = undefined;
 		}
+		selectedCollection = undefined;
 	};
 
 	const getStacItems = async () => {
