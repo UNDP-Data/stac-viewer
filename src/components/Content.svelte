@@ -7,7 +7,7 @@
 		{ title: 'Microsoft Mosaic', id: 'msmosaic' },
 		{ title: 'STAC', id: 'stac' }
 	];
-	let selectedTab: string = tabs[0].id;
+	let selectedTab: string = tabs[tabs.length - 1].id;
 </script>
 
 <div class="stac-container">
