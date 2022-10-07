@@ -132,7 +132,10 @@
 		removeLayer(layerId);
 		map.addSource(layerId, {
 			type: 'raster',
-			url: mosaicTileJson
+			tiles: [mosaicTileJson],
+			minzoom: 0,
+			maxzoom: 22,
+			tileSize: 256
 		});
 		map.addLayer({
 			id: layerId,
@@ -164,7 +167,7 @@
 
 	const createMosaicTileJson = async (mosaicJsonurl: string) => {
 		const rio_formula = 'gamma G 1.85 gamma B 1.95 sigmoidal RGB 35 0.13 saturation 1.15';
-		const url = `${TITILER_ENDPOINT}/mosaicjson/tilejson.json?tile_scale=1&TileMatrixSetId=WebMercatorQuad&url=${encodeURIComponent(
+		const url = `${TITILER_ENDPOINT}/mosaicjson/tiles/{z}/{x}/{y}.png?url=${encodeURIComponent(
 			mosaicJsonurl
 		)}&resampling=nearest&color_formula=${encodeURIComponent(rio_formula)}`;
 		console.log(url);
